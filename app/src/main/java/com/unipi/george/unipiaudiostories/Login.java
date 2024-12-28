@@ -32,7 +32,7 @@ public class Login extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance(); // Αρχικοποίηση του mAuth
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(Login.this, MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish(); // Κλείσε την Login Activity
         }
