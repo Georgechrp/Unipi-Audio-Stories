@@ -19,16 +19,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Trigger Button -->
+    <!-- Trigger Button (π.χ. εικόνα που πατάει ο χρήστης για να εμφανίσει το SlidePanel) -->
     <ImageView
         android:id="@+id/imageViewTrigger"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_margin="16dp"
-        android:background="@drawable/person"
-        android:elevation="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:src="@drawable/person"
-        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
