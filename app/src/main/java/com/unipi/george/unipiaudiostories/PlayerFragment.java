@@ -1,5 +1,7 @@
 package com.unipi.george.unipiaudiostories;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class PlayerFragment extends Fragment {
 
@@ -61,6 +67,7 @@ public class PlayerFragment extends Fragment {
         myTts = new MyTts(requireContext());
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
@@ -101,6 +108,38 @@ public class PlayerFragment extends Fragment {
         return view;
     }
 
+    public void saveTheStorie(View view, String documentId) {
+        // Παράδειγμα δεδομένων ιστορίας
+        String title = "Example Title";  // Παράδειγμα, χρησιμοποίησε τα δεδομένα σου
+        String author = "Example Author";  // Παράδειγμα
+        String year = "2024";  // Παράδειγμα
+        String text = "Example Text";  // Παράδειγμα
+        String imageUrl = "http://example.com/image.jpg";  // Παράδειγμα
+
+        // Δημιουργία μοναδικού κλειδιού για την ιστορία
+        String uniqueKey = UUID.randomUUID().toString();
+
+        // Αποθήκευση των δεδομένων στα SharedPreferences με μοναδικό κλειδί
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("StoryPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(uniqueKey + "_title", title);
+        editor.putString(uniqueKey + "_author", author);
+        editor.putString(uniqueKey + "_year", year);
+        editor.putString(uniqueKey + "_text", text);
+        editor.putString(uniqueKey + "_imageUrl", imageUrl);
+        editor.putString(uniqueKey + "_documentId", documentId);  // Αποθήκευση και του documentId
+
+        // Αποθήκευση του documentId στη λίστα των κατεβασμένων ιστοριών
+        Set<String> downloadedIds = sharedPreferences.getStringSet("downloadedIds", new HashSet<>());
+        downloadedIds.add(documentId); // Προσθήκη του νέου documentId
+        editor.putStringSet("downloadedIds", downloadedIds);
+
+        editor.apply();  // Αποθηκεύει τα δεδομένα
+        Toast.makeText(getContext(), "Story saved successfully!", Toast.LENGTH_SHORT).show();
+    }
+
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -137,6 +176,7 @@ public class PlayerFragment extends Fragment {
             iconPause.setVisibility(View.GONE);
         }
     }
+
 
     @Override
     public void onDestroy() {

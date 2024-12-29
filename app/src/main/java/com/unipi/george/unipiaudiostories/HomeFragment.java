@@ -25,6 +25,7 @@ public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment"; // Tag για logs
     private FirebaseFirestore db;
     private LinearLayout linearLayout; // Για εμφάνιση δεδομένων
+    private String text, author, year;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -55,6 +56,9 @@ public class HomeFragment extends Fragment {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String title = document.getString("title");
                             String imageUrl = document.getString("imageURL");
+                            text = document.getString("text");
+                            author = document.getString("author");
+                            year = document.getString("year");
                             String documentId = document.getId(); // Λήψη του documentId
 
                             // Προσθήκη κάθε εγγραφής στο LinearLayout
@@ -114,7 +118,7 @@ public class HomeFragment extends Fragment {
         // Προσθήκη Click Listener για την εικόνα
         imageView.setOnClickListener(v -> {
             // Εμφάνιση του PlayerFragment
-            PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, "Κείμενο παραδείγματος", title, "Συγγραφέας", "2024");
+            PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, playerFragment) // Αντικατάσταση του fragment container

@@ -1,5 +1,7 @@
 package com.unipi.george.unipiaudiostories;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -18,6 +20,9 @@ import com.bumptech.glide.Glide; // Για να φορτώσεις εικόνε�
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class LibraryFragment extends Fragment {
 
@@ -42,30 +47,43 @@ public class LibraryFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         // Φόρτωση όλων των documents από τη συλλογή "stories"
-        loadAllDocuments();
-
+        //loadAllDocuments();
+        loadDownloadedStories();
         return view;
     }
-    private void loadAllDocuments() {
+    private void loadDownloadedStories() {
+        // Ανάκτηση των κατεβασμένων ιστοριών από τα SharedPreferences
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("DownloadedStories", Context.MODE_PRIVATE);
+        Set<String> downloadedIds = sharedPreferences.getStringSet("downloadedIds", new HashSet<>());
+
+        // Αν δεν υπάρχουν κατεβασμένες ιστορίες, τότε δεν κάνουμε τίποτα
+        if (downloadedIds.isEmpty()) {
+            Toast.makeText(getContext(), "Δεν υπάρχουν κατεβασμένες ιστορίες", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Φόρτωση των ιστοριών από το Firestore
         db.collection("stories")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String title = document.getString("title");
-                            String imageUrl = document.getString("imageURL");
                             String documentId = document.getId(); // Λήψη του documentId
 
-                            // Προσθήκη κάθε εγγραφής στο LinearLayout
-                            addDataToView(title, imageUrl, documentId);
-                            Log.d(TAG, "Title: " + title + ", ImageUrl: " + imageUrl + ", DocumentId: " + documentId);
+                            // Έλεγχος αν το documentId είναι μέσα στη λίστα των κατεβασμένων ιστοριών
+                            if (downloadedIds.contains(documentId)) {
+                                String title = document.getString("title");
+                                String imageUrl = document.getString("imageURL");
+
+                                // Προσθήκη στην προβολή μόνο αν είναι κατεβασμένο
+                                addDataToView(title, imageUrl, documentId);
+                            }
                         }
                     } else {
                         Log.w(TAG, "Error getting documents.", task.getException());
                     }
                 });
     }
-
 
     private void addDataToView(String title, String imageUrl, String documentId) {
         // Δημιουργία TextView για τον τίτλο
@@ -88,7 +106,7 @@ public class LibraryFragment extends Fragment {
                 .error(R.drawable.errorimage)  // Εικόνα αν υπάρχει σφάλμα
                 .into(imageView);
 
-        // Προσθήκη Click Listener
+        // Προσθήκη Click Listener για το imageView
         imageView.setOnClickListener(v -> {
             // Φόρτωση του textField από το Firestore
             db.collection("stories")
