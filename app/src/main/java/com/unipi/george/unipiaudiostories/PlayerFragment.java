@@ -29,12 +29,14 @@ public class PlayerFragment extends Fragment {
     private static final String ARG_TITLE = "title";
     private static final String ARG_AUTHOR = "author";
     private static final String ARG_YEAR = "year";
+    private static final String ARG_DOCUMENT_ID = "documentId";
 
     private String imageUrl;
     private String text;
     private String title;
     private String author;
     private String year;
+    private String documentId;
     private MyTts myTts;
     private ImageView iconStart;
     private ImageView iconPause;
@@ -44,7 +46,7 @@ public class PlayerFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PlayerFragment newInstance(String imageUrl, String text, String title, String author, String year) {
+    public static PlayerFragment newInstance(String imageUrl, String text, String title, String author, String year, String documentId) {
         PlayerFragment fragment = new PlayerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_IMAGE_URL, imageUrl);
@@ -52,6 +54,7 @@ public class PlayerFragment extends Fragment {
         args.putString(ARG_TITLE, title);
         args.putString(ARG_AUTHOR, author);
         args.putString(ARG_YEAR, year);
+        args.putString(ARG_DOCUMENT_ID, documentId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +68,7 @@ public class PlayerFragment extends Fragment {
             title = getArguments().getString(ARG_TITLE);
             author = getArguments().getString(ARG_AUTHOR);
             year = getArguments().getString(ARG_YEAR);
+            documentId = getArguments().getString(ARG_DOCUMENT_ID);
         }
         myTts = new MyTts(requireContext());
     }
@@ -108,48 +112,33 @@ public class PlayerFragment extends Fragment {
         // Αρχική κατάσταση εικονιδίων
         toggleIcons();
 
-        // Προσθήκη κουμπιού για αλλαγή γλώσσας
+       /* // Προσθήκη κουμπιού για αλλαγή γλώσσας
         @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button changeLanguageButton = view.findViewById(R.id.change_to_Greek);
         changeLanguageButton.setOnClickListener(v -> {
             if (getActivity() != null) {
                 // Κλήση της μεθόδου setLocale στο Activity για αλλαγή γλώσσας
                 ((MainActivity) getActivity()).setLocale("el"); // Π.χ. Ελληνικά
             }
-        });
+        });*/
+
+        ImageView saveButton = view.findViewById(R.id.iconRight);
+        saveButton.setOnClickListener(v -> saveTheStory());
 
         return view;
     }
 
-    public void saveTheStorie(View view, String documentId) {
-        // Παράδειγμα δεδομένων ιστορίας
-        String title = "Example Title";  // Παράδειγμα, χρησιμοποίησε τα δεδομένα σου
-        String author = "Example Author";  // Παράδειγμα
-        String year = "2024";  // Παράδειγμα
-        String text = "Example Text";  // Παράδειγμα
-        String imageUrl = "http://example.com/image.jpg";  // Παράδειγμα
 
-        // Δημιουργία μοναδικού κλειδιού για την ιστορία
-        String uniqueKey = UUID.randomUUID().toString();
-
-        // Αποθήκευση των δεδομένων στα SharedPreferences με μοναδικό κλειδί
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("StoryPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putString(uniqueKey + "_title", title);
-        editor.putString(uniqueKey + "_author", author);
-        editor.putString(uniqueKey + "_year", year);
-        editor.putString(uniqueKey + "_text", text);
-        editor.putString(uniqueKey + "_imageUrl", imageUrl);
-        editor.putString(uniqueKey + "_documentId", documentId);  // Αποθήκευση και του documentId
-
-        // Αποθήκευση του documentId στη λίστα των κατεβασμένων ιστοριών
-        Set<String> downloadedIds = sharedPreferences.getStringSet("downloadedIds", new HashSet<>());
-        downloadedIds.add(documentId); // Προσθήκη του νέου documentId
-        editor.putStringSet("downloadedIds", downloadedIds);
-
-        editor.apply();  // Αποθηκεύει τα δεδομένα
-        Toast.makeText(getContext(), "Story saved successfully!", Toast.LENGTH_SHORT).show();
+    public void saveTheStory() {
+        if (documentId != null) {
+            //saveStoryToPreferences(documentId, imageUrl, text, title, author, year);
+            // Εδώ γράψε τον κώδικα για να αποθηκεύσεις την ιστορία χρησιμοποιώντας το documentId
+            PreferencesManager.saveStory(requireContext(), documentId, imageUrl, text, title, author, year);
+            //Toast.makeText(getContext(), "Story saved with ID: " + documentId, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
 
     @Override

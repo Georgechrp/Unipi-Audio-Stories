@@ -39,7 +39,6 @@
         android:layout_width="32dp"
         android:layout_height="24dp"
         android:layout_marginStart="8dp"
-        android:onClick="saveTheStorie"
         android:src="@drawable/download"
         app:layout_constraintStart_toEndOf="@id/titleTextView"
         app:layout_constraintTop_toTopOf="@id/titleTextView" />

@@ -88,15 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void saveTheStorie(View view) {
-        // Παράδειγμα δεδομένων ιστορίας
-        String documentId = "exampleDocumentId";  // Χρησιμοποίησε το πραγματικό documentId
-        // Κάλεσε την αντίστοιχη μέθοδο από το Fragment
-        PlayerFragment fragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-        if (fragment != null) {
-            fragment.saveTheStorie(view, documentId);
-        }
-    }
 
     public void setLocale(String languageCode) {
         Locale locale = new Locale(languageCode);

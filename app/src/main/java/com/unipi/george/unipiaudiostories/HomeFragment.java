@@ -118,7 +118,7 @@ public class HomeFragment extends Fragment {
         // Προσθήκη Click Listener για την εικόνα
         imageView.setOnClickListener(v -> {
             // Εμφάνιση του PlayerFragment
-            PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year);
+            PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year, documentId);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.container, playerFragment) // Αντικατάσταση του fragment container

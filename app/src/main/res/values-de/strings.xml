@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Login -->
-    <string name="app_name">YourAppName</string>
+    <string name="app_name">Unipi Audiogeschichten</string>
     <string name="login_text">Anmelden</string>
     <string name="hint_email">E-Mail</string>
     <string name="hint_password">Passwort</string>

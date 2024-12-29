@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Login -->
-    <string name="app_name">YourAppName</string>
+    <string name="app_name">Unipi Ηχητικές ιστορίες</string>
     <string name="login_text">Σύνδεση</string>
     <string name="hint_email">Ηλεκτρονική Διεύθυνση</string>
     <string name="hint_password">Κωδικός</string>
