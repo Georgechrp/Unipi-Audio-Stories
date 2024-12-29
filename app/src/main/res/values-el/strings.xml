@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Login -->
+    <string name="app_name">YourAppName</string>
+    <string name="login_text">Σύνδεση</string>
+    <string name="hint_email">Ηλεκτρονική Διεύθυνση</string>
+    <string name="hint_password">Κωδικός</string>
+    <string name="new_user_text">Νέος χρήστης;</string>
+    <string name="button_login">Σύνδεση</string>
+
+    <!-- Main -->
+    <string name="top_right_image_desc">Εικόνα Προφίλ</string>
+
+    <!-- Register -->
+    <string name="register_text">Εγγραφή</string>
+    <string name="already_a_user_text">Ήδη χρήστης;</string>
+    <string name="button_register">Εγγραφή</string>
+
+    <!-- Home -->
+
+    <!-- Library -->
+
+    <!-- Player -->
+    <string name="selected_image">Επιλεγμένη εικόνα</string>
+    <string name="title_placeholder">Τίτλος</string>
+    <string name="author_placeholder">Συγγραφέας</string>
+    <string name="year_placeholder">Έτος</string>
+    <string name="start_icon">Έναρξη</string>
+    <string name="pause_icon">Παύση</string>
+
+    <!-- Search -->
+    <string name="not_yet">Όχι ακόμα</string>
+
+    <!-- Slidepanel -->
+    <string name="insert_pic">Εισαγωγή εικόνας</string>
+    <string name="change_to_German">Αλλαγή σε Γερμανικά</string>
+    <string name="change_to_Greek">Αλλαγή σε Ελληνικά</string>
+    <string name="logout">Αποσύνδεση</string>
+
+    <!-- nav_menu -->
+    <string name="nav_home">Αρχική</string>
+    <string name="nav_search">Αναζήτηση</string>
+    <string name="nav_library">Λήψεις</string>
+
+    <string name="hello_blank_fragment">Γειά σας, κενό Fragment</string>
+
+</resources>

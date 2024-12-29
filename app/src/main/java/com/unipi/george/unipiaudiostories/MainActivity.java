@@ -25,7 +25,9 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
+import android.content.Context;
+import android.content.res.Configuration;
+import java.util.Locale;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +96,17 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             fragment.saveTheStorie(view, documentId);
         }
+    }
+
+    public void setLocale(String languageCode) {
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+
+        Configuration config = getResources().getConfiguration();
+        config.setLocale(locale);
+
+        createConfigurationContext(config);
+        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
     public void openSlidePanel(View view) {
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -1,11 +1,13 @@
 package com.unipi.george.unipiaudiostories;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +70,7 @@ public class PlayerFragment extends Fragment {
     }
 
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
@@ -104,6 +107,15 @@ public class PlayerFragment extends Fragment {
 
         // Αρχική κατάσταση εικονιδίων
         toggleIcons();
+
+        // Προσθήκη κουμπιού για αλλαγή γλώσσας
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button changeLanguageButton = view.findViewById(R.id.change_to_Greek);
+        changeLanguageButton.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                // Κλήση της μεθόδου setLocale στο Activity για αλλαγή γλώσσας
+                ((MainActivity) getActivity()).setLocale("el"); // Π.χ. Ελληνικά
+            }
+        });
 
         return view;
     }
