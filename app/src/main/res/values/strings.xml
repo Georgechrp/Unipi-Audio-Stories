@@ -9,4 +9,6 @@
     <string name="title_placeholder">Title</string>
     <string name="author_placeholder">Author</string>
     <string name="year_placeholder">Year</string>
+    <string name="top_right_image_desc">Προφίλ Χρήστη</string>
+
 </resources>

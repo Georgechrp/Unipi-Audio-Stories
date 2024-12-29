@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -68,11 +69,24 @@ public class HomeFragment extends Fragment {
 
 
     private void addDataToView(String title, String imageUrl, String documentId) {
+        // Δημιουργία CardView
+        CardView cardView = new CardView(getContext());
+        cardView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        cardView.setRadius(16);
+        cardView.setCardElevation(8);
+        cardView.setUseCompatPadding(true);
+        cardView.setPadding(16, 16, 16, 16);
+        cardView.setContentPadding(16, 16, 16, 16);
+
         // Δημιουργία TextView για τον τίτλο
         TextView textView = new TextView(getContext());
         textView.setText(title);
         textView.setTextSize(18);
-        textView.setPadding(16, 16, 16, 8);
+        textView.setPadding(0, 0, 0, 16);
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
         // Δημιουργία ImageView για την εικόνα
         ImageView imageView = new ImageView(getContext());
@@ -82,54 +96,34 @@ public class HomeFragment extends Fragment {
         ));
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
+        // Φόρτωση εικόνας
         Picasso.get()
                 .load(imageUrl)
-                .placeholder(R.drawable.placeholder)  // Εικόνα κατά τη διάρκεια φόρτωσης
-                .error(R.drawable.errorimage)  // Εικόνα αν υπάρχει σφάλμα
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.errorimage)
                 .into(imageView);
 
-        // Προσθήκη Click Listener
+        // Προσθήκη στο CardView
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(textView);
+        layout.addView(imageView);
+
+        cardView.addView(layout);
+
+        // Προσθήκη Click Listener για την εικόνα
         imageView.setOnClickListener(v -> {
-            // Φόρτωση του textField από το Firestore
-            db.collection("stories")
-                    .document(documentId) // Χρησιμοποιούμε το ID του document
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            // Απόκτηση του textField
-                            String textField = documentSnapshot.getString("text");
-                            String author = documentSnapshot.getString("author");
-                            String year = documentSnapshot.getString("year");
-
-                            if (textField != null) {
-                                // Εμφάνιση με Toast ή σε άλλο TextView
-                                //Toast.makeText(getContext(), textField, Toast.LENGTH_LONG).show();
-
-                                PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, textField, title, author, year);
-
-                                // Αρχικοποίηση FragmentTransaction για να αντικαταστήσεις το τρέχον fragment με το νέο
-                                getActivity().getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .replace(R.id.container, playerFragment)  // Το container είναι το FrameLayout στο activity
-                                        .addToBackStack(null)  // Επιτρέπει την επιστροφή στο προηγούμενο fragment
-                                        .commit();
-
-                            } else {
-                                Toast.makeText(getContext(), "Το textField δεν υπάρχει!", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getContext(), "Το document δεν υπάρχει!", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e(TAG, "Σφάλμα κατά την ανάκτηση του textField", e);
-                        Toast.makeText(getContext(), "Σφάλμα κατά την ανάκτηση!", Toast.LENGTH_SHORT).show();
-                    });
+            // Εμφάνιση του PlayerFragment
+            PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, "Κείμενο παραδείγματος", title, "Συγγραφέας", "2024");
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, playerFragment) // Αντικατάσταση του fragment container
+                    .addToBackStack(null) // Προσθήκη στο backstack
+                    .commit();
         });
 
-        // Προσθήκη των στοιχείων στο LinearLayout
-        linearLayout.addView(textView);
-        linearLayout.addView(imageView);
+        // Προσθήκη του CardView στο LinearLayout
+        linearLayout.addView(cardView);
     }
 
 }

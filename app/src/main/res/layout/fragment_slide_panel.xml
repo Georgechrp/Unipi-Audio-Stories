@@ -2,32 +2,25 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SlidePanel">
+    android:layout_height="match_parent">
 
-    <!-- Slide Panel -->
+    <!-- FrameLayout που καλύπτει το 80% του ύψους -->
     <FrameLayout
-        android:id="@+id/slidePanel"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:background="#EEEEEE"
-        android:elevation="8dp"
-        android:visibility="gone"
-        app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#EFEFEF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.8">
 
-    <!-- Trigger Button (π.χ. εικόνα που πατάει ο χρήστης για να εμφανίσει το SlidePanel) -->
-    <ImageView
-        android:id="@+id/imageViewTrigger"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/person"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <!-- Κουμπί για δοκιμή -->
+        <Button
+            android:id="@+id/my_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Click Me" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
