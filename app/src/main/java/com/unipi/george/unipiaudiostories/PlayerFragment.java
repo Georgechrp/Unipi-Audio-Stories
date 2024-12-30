@@ -1,13 +1,10 @@
 package com.unipi.george.unipiaudiostories;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,11 +13,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayerFragment extends Fragment {
 
@@ -41,6 +42,10 @@ public class PlayerFragment extends Fragment {
     private ImageView iconStart;
     private ImageView iconPause;
     private boolean isPlaying = false;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private long startTime = 0; // Χρόνος έναρξης σε milliseconds
+    private long totalListeningTime = 0; // Συνολικός χρόνος ακρόασης σε δευτερόλεπτα
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -62,6 +67,10 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         if (getArguments() != null) {
             imageUrl = getArguments().getString(ARG_IMAGE_URL);
             text = getArguments().getString(ARG_TEXT);
@@ -72,8 +81,6 @@ public class PlayerFragment extends Fragment {
         }
         myTts = new MyTts(requireContext());
     }
-
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -112,43 +119,69 @@ public class PlayerFragment extends Fragment {
         // Αρχική κατάσταση εικονιδίων
         toggleIcons();
 
-       /* // Προσθήκη κουμπιού για αλλαγή γλώσσας
-        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button changeLanguageButton = view.findViewById(R.id.change_to_Greek);
-        changeLanguageButton.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                // Κλήση της μεθόδου setLocale στο Activity για αλλαγή γλώσσας
-                ((MainActivity) getActivity()).setLocale("el"); // Π.χ. Ελληνικά
-            }
-        });*/
-
         ImageView saveButton = view.findViewById(R.id.iconRight);
         saveButton.setOnClickListener(v -> saveTheStory());
 
         return view;
     }
 
+    private void createOrUpdateStatistics(String userId, String documentIdToAdd) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Αναφορά στο document του χρήστη
+        firestore.collection("statistics").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        // Αν το document υπάρχει, ενημέρωσε το πεδίο "saved"
+                        firestore.collection("statistics").document(userId)
+                                .update("saved", FieldValue.arrayUnion(documentIdToAdd));
+                    } else {
+                        // Αν το document δεν υπάρχει, δημιουργεί το "saved" array
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("saved", Arrays.asList(userId, documentIdToAdd));
+
+                        firestore.collection("statistics").document(userId)
+                                .set(data);
+                    }
+                });
+    }
+
+    private void recordListeningTime(String userId, String documentId, long listeningTimeInSeconds) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Αναφορά στο document του χρήστη
+        firestore.collection("statistics").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        // Αν το document υπάρχει, ενημέρωσε το πεδίο "listeningTime" για τη συγκεκριμένη ιστορία
+                        firestore.collection("statistics").document(userId)
+                                .update("listeningTime." + documentId, FieldValue.increment(listeningTimeInSeconds));
+                    } else {
+                        // Αν το document δεν υπάρχει, δημιούργησε ένα νέο με το "listeningTime"
+                        Map<String, Object> data = new HashMap<>();
+                        Map<String, Object> listeningTime = new HashMap<>();
+                        listeningTime.put(documentId, listeningTimeInSeconds);
+                        data.put("listeningTime", listeningTime);
+
+                        firestore.collection("statistics").document(userId)
+                                .set(data);
+                    }
+                });
+    }
 
     public void saveTheStory() {
         if (documentId != null) {
-            //saveStoryToPreferences(documentId, imageUrl, text, title, author, year);
-            // Εδώ γράψε τον κώδικα για να αποθηκεύσεις την ιστορία χρησιμοποιώντας το documentId
+            createOrUpdateStatistics(user.getUid(), documentId);
             PreferencesManager.saveStory(requireContext(), documentId, imageUrl, text, title, author, year);
-            //Toast.makeText(getContext(), "Story saved with ID: " + documentId, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
     private void startSpeaking() {
         if (!isPlaying) {
             if (text != null && !text.isEmpty()) {
+                startTime = System.currentTimeMillis(); // Καταγραφή ώρας έναρξης
                 isPlaying = true;
                 myTts.speak(text);
                 toggleIcons();
@@ -160,6 +193,13 @@ public class PlayerFragment extends Fragment {
 
     private void pauseSpeaking() {
         if (isPlaying) {
+            long currentTime = System.currentTimeMillis();
+            long elapsedTime = (currentTime - startTime) / 1000;
+            totalListeningTime += elapsedTime;
+            startTime = 0;
+
+            recordListeningTime(user.getUid(), documentId, elapsedTime);
+
             isPlaying = false;
             myTts.stopSpeaking();
             toggleIcons();
@@ -178,10 +218,17 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (isPlaying) {
+            long currentTime = System.currentTimeMillis();
+            long elapsedTime = (currentTime - startTime) / 1000; // Υπολογισμός χρόνου σε δευτερόλεπτα
+            totalListeningTime += elapsedTime;
+
+            // Αποθήκευση του χρόνου ακρόασης στο Firestore
+            recordListeningTime(user.getUid(), documentId, elapsedTime);
+        }
         if (myTts != null) {
             myTts.stopSpeaking();
         }

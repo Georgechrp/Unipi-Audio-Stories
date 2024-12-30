@@ -59,21 +59,20 @@ public class HomeFragment extends Fragment {
                             text = document.getString("text");
                             author = document.getString("author");
                             year = document.getString("year");
-                            String documentId = document.getId(); // Λήψη του documentId
+                            String documentId = document.getId();
 
-                            // Προσθήκη κάθε εγγραφής στο LinearLayout
+
                             addDataToView(title, imageUrl, documentId);
-                            Log.d(TAG, "Title: " + title + ", ImageUrl: " + imageUrl + ", DocumentId: " + documentId);
+
                         }
                     } else {
-                        Log.w(TAG, "Error getting documents.", task.getException());
+                        Log.w(TAG, "Error", task.getException());
                     }
                 });
     }
 
 
     private void addDataToView(String title, String imageUrl, String documentId) {
-        // Δημιουργία CardView
         CardView cardView = new CardView(getContext());
         cardView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -115,9 +114,8 @@ public class HomeFragment extends Fragment {
 
         cardView.addView(layout);
 
-        // Προσθήκη Click Listener για την εικόνα
+
         imageView.setOnClickListener(v -> {
-            // Εμφάνιση του PlayerFragment
             PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year, documentId);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()

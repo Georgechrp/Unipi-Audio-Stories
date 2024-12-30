@@ -19,12 +19,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
     EditText emailText2, passwordText2;
     Button registerButton;
     FirebaseAuth mAuth;
+
 
     @Override
     public void onStart() {
@@ -72,7 +77,9 @@ public class Register extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+
                                         Toast.makeText(Register.this, "Authentication Successful.", Toast.LENGTH_SHORT).show();
+
                                         Intent intent = new Intent(Register.this, MainActivity.class);
                                         startActivity(intent);
                                         finish(); // Κλείσε την activity

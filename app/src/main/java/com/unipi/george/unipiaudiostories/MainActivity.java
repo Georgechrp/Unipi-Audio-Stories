@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new HomeFragment()) // Αρχικό Fragment
+                .replace(R.id.container, new HomeFragment())
                 .commit();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -88,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void Statistics(View view) {
+        Intent intent = new Intent(this, Statistics.class);
+        startActivity(intent);
+    }
 
     public void setLocale(String languageCode) {
         Locale locale = new Locale(languageCode);
@@ -104,8 +108,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(
                 R.anim.slide_in,
-                R.anim.slide_out,
-                R.anim.slide_in, // Reverse animation (αν επιστρέφουμε)
                 R.anim.slide_out
         );
 
