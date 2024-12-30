@@ -44,6 +44,6 @@
 
     <string name="hello_blank_fragment">Hallo leeres Fragment</string>
 
-
+    <string name="no_text_available"> Texte nicht verfügbar</string>
 
 </resources>

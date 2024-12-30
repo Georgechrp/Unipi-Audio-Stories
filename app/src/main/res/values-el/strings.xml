@@ -43,5 +43,5 @@
     <string name="nav_library">Λήψεις</string>
 
     <string name="hello_blank_fragment">Γειά σας, κενό Fragment</string>
-
+    <string name="no_text_available"> Το κείμενο δεν είναι διαθεσιμο</string>
 </resources>

@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/titleTextView"
-        app:layout_constraintHeight_percent="0.4" /> <!-- Τοποθετημένο στο 40% του ύψους -->
+        app:layout_constraintHeight_percent="0.4" />
 
     <!-- Τίτλος -->
     <TextView
@@ -42,7 +42,6 @@
         android:src="@drawable/download"
         app:layout_constraintStart_toEndOf="@id/titleTextView"
         app:layout_constraintTop_toTopOf="@id/titleTextView" />
-
 
     <!-- Συγγραφέας -->
     <TextView
@@ -69,6 +68,27 @@
         app:layout_constraintTop_toBottomOf="@id/authorTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <EditText
+        android:id="@+id/multilineTextView"
+        android:layout_width="431dp"
+        android:layout_height="274dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/white"
+        android:editable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        android:lines="5"
+        android:scrollbars="vertical"
+        android:text="where ie the text"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/yearTextView" />
 
     <!-- Icons Start και Pause -->
     <LinearLayout

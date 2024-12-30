@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class PlayerFragment extends Fragment {
     private FirebaseUser user;
     private long startTime = 0; // Χρόνος έναρξης σε milliseconds
     private long totalListeningTime = 0; // Συνολικός χρόνος ακρόασης σε δευτερόλεπτα
+    private EditText editText;
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -78,6 +80,7 @@ public class PlayerFragment extends Fragment {
             author = getArguments().getString(ARG_AUTHOR);
             year = getArguments().getString(ARG_YEAR);
             documentId = getArguments().getString(ARG_DOCUMENT_ID);
+
         }
         myTts = new MyTts(requireContext());
     }
@@ -91,8 +94,10 @@ public class PlayerFragment extends Fragment {
         TextView titleView = view.findViewById(R.id.titleTextView);
         TextView authorView = view.findViewById(R.id.authorTextView);
         TextView yearView = view.findViewById(R.id.yearTextView);
+        EditText multilineTextView = view.findViewById(R.id.multilineTextView);
         iconStart = view.findViewById(R.id.iconStart);
         iconPause = view.findViewById(R.id.iconPause);
+
 
         // Φόρτωση εικόνας
         if (imageUrl != null) {
@@ -111,7 +116,11 @@ public class PlayerFragment extends Fragment {
         if (year != null) {
             yearView.setText(year);
         }
-
+        if (text != null) {
+            multilineTextView.setText(text);
+        } else {
+            multilineTextView.setText(R.string.no_text_available); // Αν δεν υπάρχει κείμενο, εμφάνιση μηνύματος
+        }
         // Ρύθμιση κουμπιών
         iconStart.setOnClickListener(v -> startSpeaking());
         iconPause.setOnClickListener(v -> pauseSpeaking());
