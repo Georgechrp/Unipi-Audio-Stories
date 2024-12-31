@@ -25,7 +25,7 @@ public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment"; // Tag για logs
     private FirebaseFirestore db;
     private LinearLayout linearLayout; // Για εμφάνιση δεδομένων
-    private String text, author, year;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -56,13 +56,13 @@ public class HomeFragment extends Fragment {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String title = document.getString("title");
                             String imageUrl = document.getString("imageURL");
-                            text = document.getString("text");
-                            author = document.getString("author");
-                            year = document.getString("year");
+                            String text = document.getString("text");
+                            String author = document.getString("author");
+                            String year = document.getString("year");
                             String documentId = document.getId();
 
 
-                            addDataToView(title, imageUrl, documentId);
+                            addDataToView(title, imageUrl, documentId, text, author, year);
 
                         }
                     } else {
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void addDataToView(String title, String imageUrl, String documentId) {
+    private void addDataToView(String title, String imageUrl, String documentId, String text, String author, String year) {
         CardView cardView = new CardView(getContext());
         cardView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,

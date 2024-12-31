@@ -3,13 +3,18 @@ package com.unipi.george.unipiaudiostories;
 import android.Manifest;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,6 +32,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import android.content.Context;
 import android.content.res.Configuration;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Locale;
 import java.util.HashSet;
 import java.util.Map;
@@ -86,6 +95,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
+    }
+    private void loadSavedImage() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
+        String savedImageUri = sharedPreferences.getString("saved_image_uri", null);
+
+        if (savedImageUri != null) {
+            try {
+                Uri imageUri = Uri.parse(savedImageUri);
+                topRightImage.setImageURI(imageUri);
+            } catch (Exception e) {
+                Toast.makeText(this, "Error loading saved image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -96,6 +120,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     // Ορισμός της εικόνας στο ImageView
                     topRightImage.setImageURI(imageUri);
+
+                    // Αποθήκευση του URI στις SharedPreferences
+                    saveImageUri(imageUri.toString());
+
                     Toast.makeText(this, "Image inserted successfully!", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(this, "Error displaying image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -107,6 +135,13 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Image selection canceled.", Toast.LENGTH_SHORT).show();
         }
     }
+    private void saveImageUri(String uri) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("saved_image_uri", uri);
+        editor.apply();
+    }
+
     public void Statistics(View view) {
         Intent intent = new Intent(this, Statistics.class);
         startActivity(intent);
@@ -173,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
+
         } catch (Exception e) {
             Toast.makeText(this, "Error opening gallery: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -191,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
 
 }

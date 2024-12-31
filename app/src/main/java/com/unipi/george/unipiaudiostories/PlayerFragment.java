@@ -1,6 +1,7 @@
 package com.unipi.george.unipiaudiostories;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,9 +41,10 @@ public class PlayerFragment extends Fragment {
     private String year;
     private String documentId;
     private MyTts myTts;
-    private ImageView iconStart;
+    private ImageView iconStart, savedButton;
     private ImageView iconPause;
     private boolean isPlaying = false;
+    private static boolean flag = false;
     private FirebaseAuth auth;
     private FirebaseUser user;
     private long startTime = 0; // Χρόνος έναρξης σε milliseconds
@@ -56,6 +58,7 @@ public class PlayerFragment extends Fragment {
     public static PlayerFragment newInstance(String imageUrl, String text, String title, String author, String year, String documentId) {
         PlayerFragment fragment = new PlayerFragment();
         Bundle args = new Bundle();
+
         args.putString(ARG_IMAGE_URL, imageUrl);
         args.putString(ARG_TEXT, text);
         args.putString(ARG_TITLE, title);
@@ -65,6 +68,7 @@ public class PlayerFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,10 +133,51 @@ public class PlayerFragment extends Fragment {
         toggleIcons();
 
         ImageView saveButton = view.findViewById(R.id.iconRight);
-        saveButton.setOnClickListener(v -> saveTheStory());
+        // Μεταβλητή για την κατάσταση
+        final boolean[] isSaved = {false};
+
+        saveButton.setOnClickListener(v -> {
+            if (isSaved[0]) {
+                // Αφαίρεση της ιστορίας
+                removeTheStory();
+                saveButton.setImageResource(R.drawable.check); // Εικόνα για μη αποθηκευμένη κατάσταση.
+            } else {
+                // Αποθήκευση της ιστορίας
+                saveTheStory();
+                saveButton.setImageResource(R.drawable.checked); // Εικόνα για αποθηκευμένη κατάσταση.
+            }
+
+            // Αντιστροφή κατάστασης
+            isSaved[0] = !isSaved[0];
+        });
 
         return view;
     }
+
+    public void removeTheStory() {
+        if (documentId != null) {
+            PreferencesManager.removeStory(requireContext(), documentId);
+            // Εδώ μπορείς να ενημερώσεις και στατιστικά ή άλλα δεδομένα αν χρειάζεται.
+            Toast.makeText(getContext(), "Story removed", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public void saveTheStory() {
+        if (documentId != null) {
+            createOrUpdateStatistics(user.getUid(), documentId);
+
+
+            PreferencesManager.saveStory(requireContext(), documentId, imageUrl, text, title, author, year);
+        } else {
+            Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 
     private void createOrUpdateStatistics(String userId, String documentIdToAdd) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -178,14 +223,7 @@ public class PlayerFragment extends Fragment {
                 });
     }
 
-    public void saveTheStory() {
-        if (documentId != null) {
-            createOrUpdateStatistics(user.getUid(), documentId);
-            PreferencesManager.saveStory(requireContext(), documentId, imageUrl, text, title, author, year);
-        } else {
-            Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
-        }
-    }
+
 
     private void startSpeaking() {
         if (!isPlaying) {

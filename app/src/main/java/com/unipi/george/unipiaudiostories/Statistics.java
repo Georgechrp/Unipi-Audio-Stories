@@ -15,7 +15,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,18 +32,18 @@ public class Statistics extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
-        // Αρχικοποίηση Firebase
+        // Firebase Initialization
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Αρχικοποίηση RecyclerView
+        // RecyclerView Setup
         recyclerView = findViewById(R.id.statisticsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         statisticsList = new ArrayList<>();
         adapter = new StatisticsAdapter(statisticsList);
         recyclerView.setAdapter(adapter);
 
-        // Φόρτωση δεδομένων
+        // Load data
         loadStatistics();
     }
 
@@ -57,7 +56,7 @@ public class Statistics extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         Map<String, Object> data = document.getData();
                         if (data != null) {
-                            // Επεξεργασία δεδομένων ακρόασης
+                            // Process listening data
                             Map<String, Object> listeningTime = (Map<String, Object>) data.get("listeningTime");
                             if (listeningTime != null) {
                                 for (Map.Entry<String, Object> entry : listeningTime.entrySet()) {

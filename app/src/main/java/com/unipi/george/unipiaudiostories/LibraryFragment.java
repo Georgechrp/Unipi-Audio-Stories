@@ -28,7 +28,7 @@ public class LibraryFragment extends Fragment {
     private static final String TAG = "LibraryFragment"; // Tag για logs
     private FirebaseFirestore db;
     private LinearLayout linearLayout; // Για εμφάνιση δεδομένων
-    private String userId = "yll2LeyFTgTX0CrGl7z5uxuUcpr1"; // Αντικατάστησε με το πραγματικό userId ή από SharedPreferences.
+    private String userId;// = "yll2LeyFTgTX0CrGl7z5uxuUcpr1"; // Αντικατάστησε με το πραγματικό userId ή από SharedPreferences.
     private FirebaseAuth auth;
     private FirebaseUser user;
     public LibraryFragment() {
@@ -88,7 +88,7 @@ public class LibraryFragment extends Fragment {
                             String author = documentSnapshot.getString("author");
                             String year = documentSnapshot.getString("year");
 
-                            addDataToView(title, imageUrl, text, author, year, storyId);
+                            addDataToView(title, imageUrl,    text, author, year, storyId);
                         }
                     })
                     .addOnFailureListener(e -> Log.e(TAG, "Σφάλμα ανάκτησης ιστορίας: " + storyId, e));

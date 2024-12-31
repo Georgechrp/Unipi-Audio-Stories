@@ -22,6 +22,25 @@ public class PreferencesManager {
         editor.apply();
         Toast.makeText(context, "Story saved with ID: " + documentId, Toast.LENGTH_SHORT).show();
     }
+    public static void removeStory(Context context, String documentId) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+        // Αφαίρεση της ιστορίας
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(documentId); // Αφαιρεί την ιστορία με βάση το documentId.
+
+        // Αφαίρεση από το σύνολο των IDs
+        Set<String> documentIds = sharedPreferences.getStringSet("documentIds", new HashSet<>());
+        if (documentIds.contains(documentId)) {
+            documentIds.remove(documentId);
+            editor.putStringSet("documentIds", documentIds); // Ενημερώνουμε το σύνολο των IDs.
+        }
+
+        editor.apply();
+
+        // Ενημέρωση χρήστη
+        Toast.makeText(context, "Story removed with ID: " + documentId, Toast.LENGTH_SHORT).show();
+    }
 
     public static String[] loadStory(Context context, String documentId) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);

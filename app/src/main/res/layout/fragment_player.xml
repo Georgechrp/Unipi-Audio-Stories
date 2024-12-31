@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,13 +11,13 @@
         android:id="@+id/imageViewSelected"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="centerCrop"
         android:contentDescription="@string/selected_image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@id/titleTextView"
-        app:layout_constraintHeight_percent="0.4" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Τίτλος -->
     <TextView
@@ -39,7 +38,8 @@
         android:layout_width="32dp"
         android:layout_height="24dp"
         android:layout_marginStart="8dp"
-        android:src="@drawable/download"
+        android:background="#33D8D9"
+        android:src="@drawable/check"
         app:layout_constraintStart_toEndOf="@id/titleTextView"
         app:layout_constraintTop_toTopOf="@id/titleTextView" />
 
@@ -48,32 +48,32 @@
         android:id="@+id/authorTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="@string/author_placeholder"
         android:textSize="16sp"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
 
     <!-- Έτος -->
     <TextView
         android:id="@+id/yearTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="@string/year_placeholder"
         android:textSize="14sp"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/authorTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/authorTextView" />
 
 
     <EditText
         android:id="@+id/multilineTextView"
-        android:layout_width="431dp"
-        android:layout_height="274dp"
+        android:layout_width="388dp"
+        android:layout_height="259dp"
         android:layout_marginTop="8dp"
         android:background="@android:color/white"
         android:editable="false"
@@ -81,11 +81,11 @@
         android:focusableInTouchMode="false"
         android:gravity="start|top"
         android:inputType="textMultiLine"
-        android:lines="5"
+        android:lines="10"
         android:scrollbars="vertical"
         android:text="where ie the text"
         android:textColor="@android:color/black"
-        android:textSize="14sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/yearTextView" />
@@ -94,26 +94,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_gravity="bottom"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:layout_gravity="bottom"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
             android:id="@+id/iconStart"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:src="@drawable/start"
-            android:contentDescription="@string/start_icon" />
+            android:contentDescription="@string/start_icon"
+            android:src="@drawable/start" />
 
         <ImageView
             android:id="@+id/iconPause"
             android:layout_width="55dp"
             android:layout_height="55dp"
-            android:src="@drawable/pause3"
             android:layout_marginStart="16dp"
             android:contentDescription="@string/pause_icon"
+            android:src="@drawable/pause3"
             android:visibility="gone" />
     </LinearLayout>
 

@@ -5,7 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.util.Log;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 public class StatisticItem {
     private final String documentId;
     private final long listeningTime;
@@ -15,7 +15,7 @@ public class StatisticItem {
     public StatisticItem(String documentId, long listeningTime) {
         this.documentId = documentId;
         this.listeningTime = listeningTime;
-        this.db = FirebaseFirestore.getInstance(); // Αρχικοποίηση της Firestore instance
+        this.db = FirebaseFirestore.getInstance();
     }
 
     public void fetchTitle(OnTitleFetchedListener listener) {
@@ -25,13 +25,12 @@ public class StatisticItem {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         title = task.getResult().getString("title");
-                        listener.onTitleFetched(title); // Επιστροφή του τίτλου μέσω callback
+                        listener.onTitleFetched(title);
                     } else {
                         Log.w(TAG, "Error fetching document", task.getException());
-                        listener.onTitleFetched(null); // Επιστροφή null σε περίπτωση αποτυχίας
+                        listener.onTitleFetched(null);
                     }
                 });
-
     }
 
     public String getDocumentId() {
@@ -42,7 +41,6 @@ public class StatisticItem {
         return listeningTime;
     }
 
-    // Callback για την επιστροφή του τίτλου
     public interface OnTitleFetchedListener {
         void onTitleFetched(String title);
     }

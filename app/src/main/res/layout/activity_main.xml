@@ -13,6 +13,7 @@
         android:contentDescription="@string/top_right_image_desc"
         android:onClick="openSlidePanel"
         android:src="@drawable/person"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
