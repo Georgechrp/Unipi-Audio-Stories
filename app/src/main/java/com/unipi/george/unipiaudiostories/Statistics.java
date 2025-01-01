@@ -58,11 +58,15 @@ public class Statistics extends AppCompatActivity {
                         if (data != null) {
                             // Process listening data
                             Map<String, Object> listeningTime = (Map<String, Object>) data.get("listeningTime");
-                            if (listeningTime != null) {
-                                for (Map.Entry<String, Object> entry : listeningTime.entrySet()) {
-                                    String documentId = entry.getKey();
-                                    long time = ((Number) entry.getValue()).longValue();
-                                    statisticsList.add(new StatisticItem(documentId, time));
+                            Map<String, Object> listeningCount = (Map<String, Object>) data.get("listeningCount");
+
+                            if (listeningTime != null && listeningCount != null) {
+                                for (String documentId : listeningTime.keySet()) {
+                                    long time = ((Number) listeningTime.get(documentId)).longValue();
+                                    int count = listeningCount.containsKey(documentId) ?
+                                            ((Number) listeningCount.get(documentId)).intValue() : 0;
+
+                                    statisticsList.add(new StatisticItem(documentId, time, count));
                                 }
                             }
                             adapter.notifyDataSetChanged();

@@ -1,8 +1,10 @@
 package com.unipi.george.unipiaudiostories;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +19,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlayerFragment extends Fragment {
@@ -87,13 +91,17 @@ public class PlayerFragment extends Fragment {
 
         }
         myTts = new MyTts(requireContext());
+        myTts.setCompletionListener(() -> {
+            if (user != null && documentId != null) {
+                recordListeningCompletion(user.getUid(), documentId);
+            }
+        });
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_player, container, false);
 
-        // Αρχικοποίηση στοιχείων του layout
         ImageView imageView = view.findViewById(R.id.imageViewSelected);
         TextView titleView = view.findViewById(R.id.titleTextView);
         TextView authorView = view.findViewById(R.id.authorTextView);
@@ -102,6 +110,9 @@ public class PlayerFragment extends Fragment {
         iconStart = view.findViewById(R.id.iconStart);
         iconPause = view.findViewById(R.id.iconPause);
 
+        // Save button
+        ImageView saveButton = view.findViewById(R.id.iconRight);
+        final boolean[] isSaved = {false};
 
         // Φόρτωση εικόνας
         if (imageUrl != null) {
@@ -110,7 +121,7 @@ public class PlayerFragment extends Fragment {
             Toast.makeText(getContext(), "Image URL not available", Toast.LENGTH_SHORT).show();
         }
 
-        // Ρύθμιση κειμένου για τίτλο, συγγραφέα και έτος
+        // Ρύθμιση κειμένου
         if (title != null) {
             titleView.setText(title);
         }
@@ -123,54 +134,78 @@ public class PlayerFragment extends Fragment {
         if (text != null) {
             multilineTextView.setText(text);
         } else {
-            multilineTextView.setText(R.string.no_text_available); // Αν δεν υπάρχει κείμενο, εμφάνιση μηνύματος
+            multilineTextView.setText(R.string.no_text_available);
         }
-        // Ρύθμιση κουμπιών
-        iconStart.setOnClickListener(v -> startSpeaking());
-        iconPause.setOnClickListener(v -> pauseSpeaking());
 
-        // Αρχική κατάσταση εικονιδίων
-        toggleIcons();
+        // Έλεγχος κατάστασης από Firestore
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        if (user != null && documentId != null) {
+            firestore.collection("statistics").document(user.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Έλεγχος αν το documentId περιέχεται στη λίστα "saved"
+                            if (documentSnapshot.contains("saved")) {
+                                isSaved[0] = ((List<String>) documentSnapshot.get("saved")).contains(documentId);
+                                saveButton.setImageResource(isSaved[0] ? R.drawable.checked : R.drawable.check);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Error fetching saved status", Toast.LENGTH_SHORT).show());
+        }
 
-        ImageView saveButton = view.findViewById(R.id.iconRight);
-        // Μεταβλητή για την κατάσταση
-        final boolean[] isSaved = {false};
-
+        // Ρύθμιση κουμπιού save
         saveButton.setOnClickListener(v -> {
             if (isSaved[0]) {
                 // Αφαίρεση της ιστορίας
-                removeTheStory();
-                saveButton.setImageResource(R.drawable.check); // Εικόνα για μη αποθηκευμένη κατάσταση.
+                removeTheStory(documentId);
+                saveButton.setImageResource(R.drawable.check);
             } else {
                 // Αποθήκευση της ιστορίας
                 saveTheStory();
-                saveButton.setImageResource(R.drawable.checked); // Εικόνα για αποθηκευμένη κατάσταση.
+                saveButton.setImageResource(R.drawable.checked);
             }
-
-            // Αντιστροφή κατάστασης
-            isSaved[0] = !isSaved[0];
+            isSaved[0] = !isSaved[0]; // Αναστροφή κατάστασης
         });
+
+        // Ρύθμιση κουμπιών για έναρξη/παύση
+        iconStart.setOnClickListener(v -> startSpeaking());
+        iconPause.setOnClickListener(v -> pauseSpeaking());
+        toggleIcons();
 
         return view;
     }
 
-    public void removeTheStory() {
-        if (documentId != null) {
-            PreferencesManager.removeStory(requireContext(), documentId);
-            // Εδώ μπορείς να ενημερώσεις και στατιστικά ή άλλα δεδομένα αν χρειάζεται.
-            Toast.makeText(getContext(), "Story removed", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
+
+    private void removeTheStory(String storyId) {
+        // Λήψη του τρέχοντος χρήστη
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid(); // Αντικατέστησε με το userId του χρήστη
+
+            // Αναφορά στο Firestore για το document του χρήστη
+            DocumentReference userRef = FirebaseFirestore.getInstance().collection("statistics").document(userId);
+
+            // Αφαίρεση της ιστορίας από τη λίστα των αποθηκευμένων
+            userRef.update("saved", FieldValue.arrayRemove(storyId))
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "Ιστορία αφαιρέθηκε επιτυχώς");
+                        // Ενημέρωση του UI ή άλλες ενέργειες
+                        Toast.makeText(getContext(), "Η ιστορία αφαιρέθηκε από τα αγαπημένα", Toast.LENGTH_SHORT).show();
+                        // Εδώ μπορείς να κάνεις refresh ή να κλείσεις το fragment
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Σφάλμα κατά την αφαίρεση της ιστορίας", e);
+                        Toast.makeText(getContext(), "Σφάλμα κατά την αφαίρεση της ιστορίας", Toast.LENGTH_SHORT).show();
+                    });
         }
     }
+
 
 
     public void saveTheStory() {
         if (documentId != null) {
             createOrUpdateStatistics(user.getUid(), documentId);
-
-
-            PreferencesManager.saveStory(requireContext(), documentId, imageUrl, text, title, author, year);
         } else {
             Toast.makeText(getContext(), "Document ID not available", Toast.LENGTH_SHORT).show();
         }
@@ -223,6 +258,27 @@ public class PlayerFragment extends Fragment {
                 });
     }
 
+    private void recordListeningCompletion(String userId, String documentId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        firestore.collection("statistics").document(userId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        // Αν το document υπάρχει, ενημέρωσε το πεδίο "listeningCount" για τη συγκεκριμένη ιστορία
+                        firestore.collection("statistics").document(userId)
+                                .update("listeningCount." + documentId, FieldValue.increment(1));
+                    } else {
+                        // Αν το document δεν υπάρχει, δημιούργησε ένα νέο με το "listeningCount"
+                        Map<String, Object> data = new HashMap<>();
+                        Map<String, Object> listeningCount = new HashMap<>();
+                        listeningCount.put(documentId, 1);
+                        data.put("listeningCount", listeningCount);
+
+                        firestore.collection("statistics").document(userId)
+                                .set(data);
+                    }
+                });
+    }
 
 
     private void startSpeaking() {

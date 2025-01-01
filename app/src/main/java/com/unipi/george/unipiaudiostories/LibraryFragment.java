@@ -76,6 +76,13 @@ public class LibraryFragment extends Fragment {
     }
 
     private void fetchStoriesData(List<String> storyIds) {
+        // Αν δεν υπάρχουν αποθηκευμένες ιστορίες, βγαίνουμε νωρίς
+        if (storyIds == null || storyIds.isEmpty()) {
+            Toast.makeText(getContext(), "Δεν έχετε αποθηκευμένες ιστορίες", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Διατρέχουμε τα saved IDs και φορτώνουμε μόνο τις ιστορίες που είναι αποθηκευμένες
         for (String storyId : storyIds) {
             db.collection("stories")
                     .document(storyId)
@@ -88,12 +95,13 @@ public class LibraryFragment extends Fragment {
                             String author = documentSnapshot.getString("author");
                             String year = documentSnapshot.getString("year");
 
-                            addDataToView(title, imageUrl,    text, author, year, storyId);
+                            addDataToView(title, imageUrl, text, author, year, storyId);
                         }
                     })
                     .addOnFailureListener(e -> Log.e(TAG, "Σφάλμα ανάκτησης ιστορίας: " + storyId, e));
         }
     }
+
 
     private void addDataToView(String title, String imageUrl, String text, String author, String year, String documentId) {
         // Δημιουργία CardView

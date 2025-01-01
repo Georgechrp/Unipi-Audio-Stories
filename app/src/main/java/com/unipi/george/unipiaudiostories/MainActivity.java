@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -24,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -47,10 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     ImageView topRightImage;
-
-    private final int REQUEST_PERMISSION_CODE = 100;
-    private final int PICK_IMAGE_REQUEST = 200;
-    private boolean isSlidePanelVisible  = false; // Κατάσταση του panel
+    private final int REQUEST_PERMISSION_CODE = 100; //για την εισαγωγή εικόνας
+    private final int PICK_IMAGE_REQUEST = 200;      //για την εισαγωγή εικόνας
+    private boolean isSlidePanelVisible  = false;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,24 +94,9 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
-
-
     }
-    private void loadSavedImage() {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
-        String savedImageUri = sharedPreferences.getString("saved_image_uri", null);
 
-        if (savedImageUri != null) {
-            try {
-                Uri imageUri = Uri.parse(savedImageUri);
-                topRightImage.setImageURI(imageUri);
-            } catch (Exception e) {
-                Toast.makeText(this, "Error loading saved image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -135,28 +121,18 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Image selection canceled.", Toast.LENGTH_SHORT).show();
         }
     }
-    private void saveImageUri(String uri) {
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("saved_image_uri", uri);
-        editor.apply();
+
+    public void saveTheStory(View view) {
+        // Προσθήκη της λειτουργικότητας που θέλεις εδώ
+        Log.d("Statistics", "saveTheStory clicked!");
     }
 
-    public void Statistics(View view) {
+
+    public void CallStatisticsActivity(View view) {
         Intent intent = new Intent(this, Statistics.class);
         startActivity(intent);
     }
 
-    public void setLocale(String languageCode) {
-        Locale locale = new Locale(languageCode);
-        Locale.setDefault(locale);
-
-        Configuration config = getResources().getConfiguration();
-        config.setLocale(locale);
-
-        createConfigurationContext(config);
-        getResources().updateConfiguration(config, getResources().getDisplayMetrics());
-    }
     public void openSlidePanel(View view) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -164,9 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 R.anim.slide_in,
                 R.anim.slide_out
         );
-
         if (isSlidePanelVisible) {
-            // Αφαίρεση του SlidePanel
             SlidePanel slidePanel = (SlidePanel) fragmentManager.findFragmentByTag("SlidePanel");
             if (slidePanel != null) {
                 transaction.remove(slidePanel);
@@ -174,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
             isSlidePanelVisible = false;
             findViewById(R.id.slide_panel_container).setVisibility(View.INVISIBLE);
         } else {
-            // Εμφάνιση του SlidePanel
             SlidePanel slidePanel = SlidePanel.newInstance();
             transaction.add(R.id.slide_panel_container, slidePanel, "SlidePanel");
             findViewById(R.id.slide_panel_container).setVisibility(View.VISIBLE);
@@ -185,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+
+    //About insert picture and permissions
     public void insertPic(View view) {
         // Έλεγχος άδειας ανάλογα με την έκδοση του Android
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -228,6 +203,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void saveImageUri(String uri) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("saved_image_uri", uri);
+        editor.apply();
+    }
 
+    //Δεν χρησιμοποιείται, δεν λειτουργεί σωστά ακόμα
+    private void loadSavedImage() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
+        String savedImageUri = sharedPreferences.getString("saved_image_uri", null);
 
+        if (savedImageUri != null) {
+            try {
+                Uri imageUri = Uri.parse(savedImageUri);
+                topRightImage.setImageURI(imageUri);
+            } catch (Exception e) {
+                Toast.makeText(this, "Error loading saved image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

@@ -56,7 +56,7 @@ public class SlidePanel extends Fragment {
         // Ορίζουμε τον OnClickListener για το κουμπί
         button.setOnClickListener(v -> {
             // Εμφανίζουμε μήνυμα Toast
-            Toast.makeText(getActivity(), "Button clicked!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "Logout successfully!", Toast.LENGTH_SHORT).show();
 
             // Καλούμε τη συνάρτηση signOut
             signOut();

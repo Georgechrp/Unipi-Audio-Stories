@@ -35,6 +35,7 @@ public class StatisticsAdapter extends RecyclerView.Adapter<StatisticsAdapter.Vi
         // Display placeholder text initially
         holder.titleTextView.setText("Loading title...");
         holder.timeTextView.setText("Listening Time: " + item.getListeningTime() + " seconds");
+        holder.countTextView.setText("Listening Count: " + item.getListeningCount()); // Εμφάνιση listeningCount
 
         // Alternate background color for rows
         if (position % 2 == 0) {
@@ -61,12 +62,14 @@ public class StatisticsAdapter extends RecyclerView.Adapter<StatisticsAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView;
         TextView timeTextView;
+        TextView countTextView; // Νέο πεδίο για listeningCount
         CardView cardView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.titleTextView);
             timeTextView = itemView.findViewById(R.id.timeTextView);
+            countTextView = itemView.findViewById(R.id.countTextView); // Αρχικοποίηση του νέου TextView
             cardView = itemView.findViewById(R.id.statisticCardView);
         }
     }
