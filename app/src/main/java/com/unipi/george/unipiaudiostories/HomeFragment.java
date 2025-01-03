@@ -24,36 +24,39 @@ public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment"; // Tag για logs
     private FirebaseFirestore db;
-    private LinearLayout linearLayout; // Για εμφάνιση δεδομένων
-
+    private LinearLayout linearLayout; // LinearLayout για εμφάνιση δεδομένων δυναμικά
 
     public HomeFragment() {
-        // Required empty public constructor
+        // κατασκευαστης
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate το layout για το fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Αρχικοποίηση του LinearLayout
+        // Αρχικοποίηση του LinearLayout (προβολή δεδομένων σε λίστα)
         linearLayout = view.findViewById(R.id.linearLayoutData);
 
-        // Αρχικοποίηση Firestore
-        db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance(); // Αρχικοποίηση Firestore για πρόσβαση στα δεδομένα
 
-        // Φόρτωση όλων των documents από τη συλλογή "stories"
+        // Φόρτωση όλων των εγγράφων από τη συλλογή "stories"
         loadAllDocuments();
 
         return view;
     }
+
+    /**
+     * Φορτώνει όλα τα έγγραφα από τη συλλογή "stories" του Firestore.
+     * Αν είναι επιτυχής η φόρτωση, καλεί τη μέθοδο addDataToView για κάθε document.
+     */
     private void loadAllDocuments() {
         db.collection("stories")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Ανάκτηση δεδομένων από το έγγραφο
                             String title = document.getString("title");
                             String imageUrl = document.getString("imageURL");
                             String text = document.getString("text");
@@ -61,61 +64,64 @@ public class HomeFragment extends Fragment {
                             String year = document.getString("year");
                             String documentId = document.getId();
 
-
+                            // Δημιουργία και εμφάνιση των δεδομένων σαν card
                             addDataToView(title, imageUrl, documentId, text, author, year);
-
                         }
                     } else {
+                        // αν αποτύχει η ανάκτηση
                         Log.w(TAG, "Error", task.getException());
                     }
                 });
     }
 
 
+     //Δημιουργεί και προσθέτει ένα δυναμικό CardView για κάθε έγγραφο.
     private void addDataToView(String title, String imageUrl, String documentId, String text, String author, String year) {
+        // Δημιουργία CardView
         CardView cardView = new CardView(getContext());
         cardView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         ));
-        cardView.setRadius(16);
+        cardView.setRadius(16); // Στρογγυλεμένες γωνίες
         cardView.setCardElevation(8);
-        cardView.setUseCompatPadding(true);
-        cardView.setPadding(16, 16, 16, 16);
+        cardView.setUseCompatPadding(true); // padding για παλαιότερες εκδόσεις
+        cardView.setPadding(16, 16, 16, 16); // Εσωτερικό padding
         cardView.setContentPadding(16, 16, 16, 16);
 
-        // Δημιουργία TextView για τον τίτλο
+        // Δημιουργία TextView για τον τίτλο της ιστορίας
         TextView textView = new TextView(getContext());
         textView.setText(title);
         textView.setTextSize(18);
-        textView.setPadding(0, 0, 0, 16);
-        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        textView.setPadding(0, 0, 0, 16); // Κάτω padding
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); // Κεντράρισμα κειμένου
 
-        // Δημιουργία ImageView για την εικόνα
+        // Δημιουργία ImageView για την εμφάνιση της εικόνας
         ImageView imageView = new ImageView(getContext());
         imageView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                500 // Ύψος της εικόνας
+                500 // Ύψος εικόνας
         ));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP); // Προσαρμογή
 
-        // Φόρτωση εικόνας
+        // Φόρτωση εικόνας από URL χρησιμοποιώντας Picasso
         Picasso.get()
-                .load(imageUrl)
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.errorimage)
+                .load(imageUrl) // URL εικόνας
+                .placeholder(R.drawable.placeholder) // Εικόνα placeholder αν καθυστερεί το φόρτωμα
+                .error(R.drawable.errorimage) // Εικόνα σφάλματος αν αποτύχει το φόρτωμα
                 .into(imageView);
 
-        // Προσθήκη στο CardView
+        // Προσθήκη TextView και ImageView σε LinearLayout
         LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setOrientation(LinearLayout.VERTICAL); // Κατακόρυφη διάταξη
         layout.addView(textView);
         layout.addView(imageView);
 
-        cardView.addView(layout);
+        cardView.addView(layout); // Προσθήκη του layout στο CardView
 
-
+        // Προσθήκη λειτουργίας click στην εικόνα
         imageView.setOnClickListener(v -> {
+            // Δημιουργία και εμφάνιση του PlayerFragment με τα δεδομένα της ιστορίας
             PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year, documentId);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
@@ -124,8 +130,7 @@ public class HomeFragment extends Fragment {
                     .commit();
         });
 
-        // Προσθήκη του CardView στο LinearLayout
+        // Προσθήκη του CardView στο LinearLayout της διεπαφής
         linearLayout.addView(cardView);
     }
-
 }

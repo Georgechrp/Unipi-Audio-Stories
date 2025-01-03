@@ -15,31 +15,29 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class SlidePanel extends Fragment {
 
+
     FirebaseAuth mAuth;
 
     @Override
     public void onStart() {
         super.onStart();
-        mAuth = FirebaseAuth.getInstance(); // Αρχικοποίηση του mAuth
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            // Αν υπάρχει ενεργός χρήστης, ξεκινάμε το MainActivity και τερματίζουμε το Fragment Activity.
-            /*Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
-            getActivity().finish(); // Κλείσιμο του Activity*/
-        }
+        mAuth = FirebaseAuth.getInstance(); // Αρχικοποίηση της αυθεντικοποίησης Firebase
+       // FirebaseUser currentUser = mAuth.getCurrentUser(); // Έλεγχος αν υπάρχει συνδεδεμένος χρήστης
+
     }
+
     private void signOut() {
-        FirebaseAuth.getInstance().signOut(); // Εκτέλεση του logout
+        FirebaseAuth.getInstance().signOut(); // Αποσύνδεση από το Firebase
         Toast.makeText(getActivity(), "Logged out successfully", Toast.LENGTH_SHORT).show();
 
-        // Επιστροφή στην οθόνη εισόδου (Login Activity)
+        // Μεταφορά του χρήστη στην οθόνη εισόδου
         Intent intent = new Intent(getActivity(), Login.class);
         startActivity(intent);
-        getActivity().finish(); // Κλείσιμο του Activity που φιλοξενεί το Fragment
+        getActivity().finish();
     }
+
     public SlidePanel() {
-        // Required empty public constructor
+        // Απαραίτητο
     }
 
     public static SlidePanel newInstance() {
@@ -48,24 +46,16 @@ public class SlidePanel extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_slide_panel, container, false);
+        // Μέθοδος για τη δημιουργία του UI του Fragment
+        View view = inflater.inflate(R.layout.fragment_slide_panel, container, false); // Φόρτωση του layout XML
 
-        // Initialize UI elements
-        Button button = view.findViewById(R.id.my_button);
-        // Ορίζουμε τον OnClickListener για το κουμπί
+        Button button = view.findViewById(R.id.my_button); // Εύρεση του κουμπιού από το layout
+
         button.setOnClickListener(v -> {
-            // Εμφανίζουμε μήνυμα Toast
-            //Toast.makeText(getActivity(), "Logout successfully!", Toast.LENGTH_SHORT).show();
-
-            // Καλούμε τη συνάρτηση signOut
             signOut();
         });
 
-
         return view;
     }
-
-
 
 }

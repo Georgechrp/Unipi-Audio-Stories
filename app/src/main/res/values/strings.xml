@@ -12,6 +12,8 @@
     <string name="register_text">Register</string>
     <string name="already_a_user_text">Already a user?</string>
     <string name="button_register">Register</string>
+    <string name="emailText2">E-mail</string>
+    <string name="passwordText2">Password</string>
     <!-- Home -->
 
     <!-- Library -->
@@ -26,18 +28,26 @@
     <string name="pause_icon">Pause</string>
     <!-- Search -->
     <string name="not_yet">not yet</string>
+    <string name="search_edit_text">What are you looking for?</string>
     <!-- Slidepanel -->
     <string name="insert_pic">Insert a picture</string>
+    <string name="Statistics">Statistics</string>
     <string name="change_to_German">Change to German</string>
     <string name="change_to_Greek">Change to Greek</string>
     <string name="logout">Logout</string>
 
     <!-- nav_menu -->
-    <string name="nav_home">Αρχική</string>
-    <string name="nav_search">Αναζήτηση</string>
-    <string name="nav_library">Λήψεις</string>
+    <string name="nav_home">Main Page</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_library">Installs</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="no_text_available"> texts not available</string>
+
+    <!-- statistics -->
+    <string name="titleTextView">Story title:</string>
+    <string name="timeTextView">Listening Time:</string>
+    <string name="countTextView">Listening Count:</string>
+    <string name="titleText">Your Statistics</string>
 </resources>

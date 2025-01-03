@@ -41,6 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="72dp"
-        android:text="Not Ready"
+        android:text="@string/not_yet"
         android:gravity="center" />
 </FrameLayout>

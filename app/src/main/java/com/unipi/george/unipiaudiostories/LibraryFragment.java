@@ -28,9 +28,10 @@ public class LibraryFragment extends Fragment {
     private static final String TAG = "LibraryFragment"; // Tag για logs
     private FirebaseFirestore db;
     private LinearLayout linearLayout; // Για εμφάνιση δεδομένων
-    private String userId;// = "yll2LeyFTgTX0CrGl7z5uxuUcpr1"; // Αντικατάστησε με το πραγματικό userId ή από SharedPreferences.
+    private String userId; // Αναγνωριστικό χρήστη που ανακτάται από FirebaseAuth
     private FirebaseAuth auth;
     private FirebaseUser user;
+
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -38,37 +39,37 @@ public class LibraryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Αρχικοποίηση Firebase Authentication και ανάκτηση τρέχοντος χρήστη
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         userId = user.getUid();
-        // Inflate το layout για το fragment
+
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        // Αρχικοποίηση του LinearLayout
         linearLayout = view.findViewById(R.id.linearLayoutData);
-
-        // Αρχικοποίηση Firestore
         db = FirebaseFirestore.getInstance();
-
-        // Φόρτωση των αγαπημένων ιστοριών
-        loadSavedStories();
+        loadSavedStories();// Φόρτωση των αγαπημένων ιστοριών του χρήστη
 
         return view;
     }
 
     private void loadSavedStories() {
+        // Ανάκτηση της συλλογής "statistics" για το τρέχον userId
         db.collection("statistics")
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
+                        // Ανάκτηση λίστας αποθηκευμένων ιστοριών
                         List<String> savedStories = (List<String>) documentSnapshot.get("saved");
                         if (savedStories != null && !savedStories.isEmpty()) {
+                            // Φόρτωση δεδομένων για κάθε αποθηκευμένη ιστορία
                             fetchStoriesData(savedStories);
                         } else {
+                            // Ενημέρωση χρήστη αν δεν υπάρχουν αποθηκευμένες ιστορίες
                             Toast.makeText(getContext(), "Δεν έχετε αποθηκευμένες ιστορίες", Toast.LENGTH_SHORT).show();
                         }
                     } else {
+                        // Ενημέρωση χρηστη αν δεν υπάρχει το έγγραφο
                         Toast.makeText(getContext(), "Δεν έχετε αποθηκεύσει κάποια ιστορία", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -76,25 +77,26 @@ public class LibraryFragment extends Fragment {
     }
 
     private void fetchStoriesData(List<String> storyIds) {
-        // Αν δεν υπάρχουν αποθηκευμένες ιστορίες, βγαίνουμε νωρίς
         if (storyIds == null || storyIds.isEmpty()) {
             Toast.makeText(getContext(), "Δεν έχετε αποθηκευμένες ιστορίες", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Διατρέχουμε τα saved IDs και φορτώνουμε μόνο τις ιστορίες που είναι αποθηκευμένες
+        // Επανάληψη για κάθε αποθηκευμένο ID
         for (String storyId : storyIds) {
             db.collection("stories")
                     .document(storyId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
+                            // Ανάκτηση πεδίων της ιστορίας από το έγγραφο
                             String title = documentSnapshot.getString("title");
                             String imageUrl = documentSnapshot.getString("imageURL");
                             String text = documentSnapshot.getString("text");
                             String author = documentSnapshot.getString("author");
                             String year = documentSnapshot.getString("year");
 
+                            // Προσθήκη των δεδομένων στο UI
                             addDataToView(title, imageUrl, text, author, year, storyId);
                         }
                     })
@@ -102,9 +104,8 @@ public class LibraryFragment extends Fragment {
         }
     }
 
-
     private void addDataToView(String title, String imageUrl, String text, String author, String year, String documentId) {
-        // Δημιουργία CardView
+        // Δημιουργία CardView για εμφάνιση της ιστορίας
         CardView cardView = new CardView(getContext());
         cardView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -116,14 +117,14 @@ public class LibraryFragment extends Fragment {
         cardView.setPadding(16, 16, 16, 16);
         cardView.setContentPadding(16, 16, 16, 16);
 
-        // Δημιουργία TextView για τον τίτλο
+        // Δημιουργία TextView για τον τίτλο της ιστορίας
         TextView textView = new TextView(getContext());
         textView.setText(title);
         textView.setTextSize(18);
         textView.setPadding(0, 0, 0, 16);
         textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-        // Δημιουργία ImageView για την εικόνα
+        // Δημιουργία ImageView για την εικόνα της ιστορίας
         ImageView imageView = new ImageView(getContext());
         imageView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -131,14 +132,14 @@ public class LibraryFragment extends Fragment {
         ));
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        // Φόρτωση εικόνας
+        // Χρήση Picasso για φόρτωση εικόνας από URL
         Picasso.get()
                 .load(imageUrl)
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.errorimage)
                 .into(imageView);
 
-        // Προσθήκη στο CardView
+        // Δημιουργία Layout για την ομαδοποίηση τίτλου και εικόνας
         LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(textView);
@@ -146,7 +147,7 @@ public class LibraryFragment extends Fragment {
 
         cardView.addView(layout);
 
-        // Προσθήκη listener για το ImageView
+        // Listener για την εικόνα που ανοίγει το PlayerFragment
         imageView.setOnClickListener(v -> {
             PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year, documentId);
             requireActivity().getSupportFragmentManager()

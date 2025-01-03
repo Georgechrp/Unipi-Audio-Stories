@@ -31,6 +31,7 @@ import java.util.Map;
 
 public class PlayerFragment extends Fragment {
 
+    // Σταθερές που χρησιμοποιούνται για την αποθήκευση των παραμέτρων του Fragment
     private static final String ARG_IMAGE_URL = "imageUrl";
     private static final String ARG_TEXT = "text";
     private static final String ARG_TITLE = "title";
@@ -38,27 +39,30 @@ public class PlayerFragment extends Fragment {
     private static final String ARG_YEAR = "year";
     private static final String ARG_DOCUMENT_ID = "documentId";
 
+    // Μεταβλητές που αποθηκεύουν τα δεδομένα του fragment
     private String imageUrl;
     private String text;
     private String title;
     private String author;
     private String year;
     private String documentId;
-    private MyTts myTts;
+    private MyTts myTts; // Αντικείμενο Text-to-Speech για την ανάγνωση κειμένου
     private ImageView iconStart, savedButton;
     private ImageView iconPause;
-    private boolean isPlaying = false;
+    private boolean isPlaying = false; // Κατάσταση αν είναι σε αναπαραγωγή
     private static boolean flag = false;
-    private FirebaseAuth auth;
-    private FirebaseUser user;
-    private long startTime = 0; // Χρόνος έναρξης σε milliseconds
-    private long totalListeningTime = 0; // Συνολικός χρόνος ακρόασης σε δευτερόλεπτα
+    private FirebaseAuth auth; // Firebase Authentication
+    private FirebaseUser user; // Ο τρέχων χρήστης
+    private long startTime = 0; // Χρόνος έναρξης ακρόασης
+    private long totalListeningTime = 0; // Συνολικός χρόνος ακρόασης
     private EditText editText;
 
+
     public PlayerFragment() {
-        // Required empty public constructor
+        // Κενός constructor
     }
 
+    // Δημιουργεί ένα νέο instance του fragment με δεδομένα
     public static PlayerFragment newInstance(String imageUrl, String text, String title, String author, String year, String documentId) {
         PlayerFragment fragment = new PlayerFragment();
         Bundle args = new Bundle();
@@ -73,14 +77,15 @@ public class PlayerFragment extends Fragment {
         return fragment;
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Αρχικοποίηση Firebase Authentication
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
+        // Ανάκτηση παραμέτρων από το Bundle
         if (getArguments() != null) {
             imageUrl = getArguments().getString(ARG_IMAGE_URL);
             text = getArguments().getString(ARG_TEXT);
@@ -88,20 +93,23 @@ public class PlayerFragment extends Fragment {
             author = getArguments().getString(ARG_AUTHOR);
             year = getArguments().getString(ARG_YEAR);
             documentId = getArguments().getString(ARG_DOCUMENT_ID);
-
         }
+
+        // Αρχικοποίηση του MyTts για Text-to-Speech
         myTts = new MyTts(requireContext());
         myTts.setCompletionListener(() -> {
             if (user != null && documentId != null) {
-                recordListeningCompletion(user.getUid(), documentId);
+                recordListeningCompletion(user.getUid(), documentId); // Καταγραφή ολοκλήρωσης ακρόασης
             }
         });
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Φόρτωση του layout για το fragment
         View view = inflater.inflate(R.layout.fragment_player, container, false);
 
+        // Σύνδεση views από το layout
         ImageView imageView = view.findViewById(R.id.imageViewSelected);
         TextView titleView = view.findViewById(R.id.titleTextView);
         TextView authorView = view.findViewById(R.id.authorTextView);
@@ -110,18 +118,18 @@ public class PlayerFragment extends Fragment {
         iconStart = view.findViewById(R.id.iconStart);
         iconPause = view.findViewById(R.id.iconPause);
 
-        // Save button
-        ImageView saveButton = view.findViewById(R.id.iconRight);
-        final boolean[] isSaved = {false};
 
-        // Φόρτωση εικόνας
+        ImageView saveButton = view.findViewById(R.id.iconRight);
+        final boolean[] isSaved = {false}; // Κατάσταση αν είναι αποθηκευμένο
+
+        // Φόρτωση εικόνας μέσω Picasso
         if (imageUrl != null) {
             Picasso.get().load(imageUrl).into(imageView);
         } else {
             Toast.makeText(getContext(), "Image URL not available", Toast.LENGTH_SHORT).show();
         }
 
-        // Ρύθμιση κειμένου
+        // Εμφάνιση κειμένων στις αντίστοιχες TextViews
         if (title != null) {
             titleView.setText(title);
         }
@@ -137,14 +145,13 @@ public class PlayerFragment extends Fragment {
             multilineTextView.setText(R.string.no_text_available);
         }
 
-        // Έλεγχος κατάστασης από Firestore
+        // Έλεγχος αν το έγγραφο είναι αποθηκευμένο στον Firestore
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         if (user != null && documentId != null) {
             firestore.collection("statistics").document(user.getUid())
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // Έλεγχος αν το documentId περιέχεται στη λίστα "saved"
                             if (documentSnapshot.contains("saved")) {
                                 isSaved[0] = ((List<String>) documentSnapshot.get("saved")).contains(documentId);
                                 saveButton.setImageResource(isSaved[0] ? R.drawable.checked : R.drawable.check);
@@ -154,21 +161,18 @@ public class PlayerFragment extends Fragment {
                     .addOnFailureListener(e -> Toast.makeText(getContext(), "Error fetching saved status", Toast.LENGTH_SHORT).show());
         }
 
-        // Ρύθμιση κουμπιού save
+        // κουμπιο αποθήκευσης
         saveButton.setOnClickListener(v -> {
             if (isSaved[0]) {
-                // Αφαίρεση της ιστορίας
                 removeTheStory(documentId);
                 saveButton.setImageResource(R.drawable.check);
             } else {
-                // Αποθήκευση της ιστορίας
                 saveTheStory();
                 saveButton.setImageResource(R.drawable.checked);
             }
             isSaved[0] = !isSaved[0]; // Αναστροφή κατάστασης
         });
 
-        // Ρύθμιση κουμπιών για έναρξη/παύση
         iconStart.setOnClickListener(v -> startSpeaking());
         iconPause.setOnClickListener(v -> pauseSpeaking());
         toggleIcons();
@@ -176,23 +180,17 @@ public class PlayerFragment extends Fragment {
         return view;
     }
 
-
     private void removeTheStory(String storyId) {
-        // Λήψη του τρέχοντος χρήστη
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String userId = user.getUid(); // Αντικατέστησε με το userId του χρήστη
+            String userId = user.getUid();
 
-            // Αναφορά στο Firestore για το document του χρήστη
             DocumentReference userRef = FirebaseFirestore.getInstance().collection("statistics").document(userId);
 
-            // Αφαίρεση της ιστορίας από τη λίστα των αποθηκευμένων
             userRef.update("saved", FieldValue.arrayRemove(storyId))
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "Ιστορία αφαιρέθηκε επιτυχώς");
-                        // Ενημέρωση του UI ή άλλες ενέργειες
                         Toast.makeText(getContext(), "Η ιστορία αφαιρέθηκε από τα αγαπημένα", Toast.LENGTH_SHORT).show();
-                        // Εδώ μπορείς να κάνεις refresh ή να κλείσεις το fragment
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "Σφάλμα κατά την αφαίρεση της ιστορίας", e);
@@ -200,8 +198,6 @@ public class PlayerFragment extends Fragment {
                     });
         }
     }
-
-
 
     public void saveTheStory() {
         if (documentId != null) {

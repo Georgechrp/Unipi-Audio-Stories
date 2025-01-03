@@ -9,31 +9,33 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class StatisticItem {
     private final String documentId;
     private final long listeningTime;
-    private final int listeningCount; // Νέο πεδίο
+    private final int listeningCount;
     private FirebaseFirestore db;
     private String title;
 
     public StatisticItem(String documentId, long listeningTime, int listeningCount) {
-        this.documentId = documentId;
-        this.listeningTime = listeningTime;
-        this.listeningCount = listeningCount; // Αποθήκευση της νέας τιμής
-        this.db = FirebaseFirestore.getInstance();
+        this.documentId = documentId; // Το μοναδικό ID του εγγράφου στο Firestore
+        this.listeningTime = listeningTime; // Συνολικός χρόνος ακρόασης
+        this.listeningCount = listeningCount; // Αριθμός φορών που αναπαράχθηκε η ιστορία
+        this.db = FirebaseFirestore.getInstance(); // Αρχικοποίηση της σύνδεσης με το Firestore
     }
 
+    // Μέθοδος για την ανάκτηση του τίτλου μιας ιστορίας από το Firestore
     public void fetchTitle(OnTitleFetchedListener listener) {
-        db.collection("stories")
-                .document(documentId)
-                .get()
+        db.collection("stories") // Ορισμός της συλλογής "stories" στο Firestore
+                .document(documentId) // Αναφορά στο συγκεκριμένο έγγραφο μέσω του documentId
+                .get() // Ανάκτηση του εγγράφου
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        title = task.getResult().getString("title");
-                        listener.onTitleFetched(title);
+                        title = task.getResult().getString("title"); // Ανάκτηση του πεδίου "title" από το έγγραφο
+                        listener.onTitleFetched(title); // Επιστροφή του τίτλου μέσω του listener
                     } else {
                         Log.w(TAG, "Error fetching document", task.getException());
-                        listener.onTitleFetched(null);
+                        listener.onTitleFetched(null); // Επιστροφή null σε περίπτωση σφάλματος
                     }
                 });
     }
+
 
     public String getDocumentId() {
         return documentId;
@@ -44,10 +46,10 @@ public class StatisticItem {
     }
 
     public int getListeningCount() {
-        return listeningCount; // Getter για το νέο πεδίο
+        return listeningCount;
     }
 
     public interface OnTitleFetchedListener {
-        void onTitleFetched(String title);
+        void onTitleFetched(String title); // Μέθοδος που καλείται όταν ολοκληρωθεί η ανάκτηση του τίτλου
     }
 }

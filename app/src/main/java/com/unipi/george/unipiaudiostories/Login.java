@@ -29,20 +29,21 @@ public class Login extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        mAuth = FirebaseAuth.getInstance(); // Αρχικοποίηση του mAuth
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance(); // Αρχικοποίηση του FirebaseAuth instance
+        FirebaseUser currentUser = mAuth.getCurrentUser(); // Έλεγχος αν υπάρχει ήδη συνδεδεμένος χρήστης
         if (currentUser != null) {
+            // Αν υπάρχει συνδεδεμένος χρήστης, κατευθύνεται στο MainActivity
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-            finish(); // Κλείσε την Login Activity
+            finish(); // Κλείσιμο της Login Activity για να μην μπορεί ο χρήστης να επιστρέψει
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_login);
+        EdgeToEdge.enable(this); // Ενεργοποίηση edge-to-edge σχεδιασμού
+        setContentView(R.layout.activity_login); // Ορισμός του layout της Login Activity
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -50,17 +51,20 @@ public class Login extends AppCompatActivity {
             return insets;
         });
 
+        // Αρχικοποίηση
         mAuth = FirebaseAuth.getInstance();
         emailText = findViewById(R.id.emailText1);
         passwordText = findViewById(R.id.passwordText1);
         loginButton = findViewById(R.id.loginButton);
 
+        // όταν ο χρήστης πατάει το κουμπί login
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = emailText.getText().toString();
                 String password = passwordText.getText().toString();
 
+                // Έλεγχοι εγκυρότητας των πεδίων εισόδου
                 if (email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(Login.this, "Please enter email and password", Toast.LENGTH_SHORT).show();
                 } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -68,17 +72,20 @@ public class Login extends AppCompatActivity {
                 } else if (password.length() < 6) {
                     Toast.makeText(Login.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
+                    // Προσπάθεια σύνδεσης με το Firebase Authentication
                     mAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        // Αν η σύνδεση είναι επιτυχής
                                         Toast.makeText(Login.this, "Login Successful.",
                                                 Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(Login.this, MainActivity.class);
                                         startActivity(intent);
-                                        finish(); // Κλείσε την Login Activity
+                                        finish(); // Κλείσιμο της Login Activity
                                     } else {
+                                        // Αν αποτύχει η σύνδεση
                                         Toast.makeText(Login.this, "Authentication failed.",
                                                 Toast.LENGTH_SHORT).show();
                                     }
@@ -89,11 +96,9 @@ public class Login extends AppCompatActivity {
         });
     }
 
-
-
-
+    // Μέθοδος για μετάβαση στη σελίδα εγγραφής (Register Activity)
     public void gotoRegister(View view) {
         Intent intent = new Intent(this, Register.class);
-        startActivity(intent);
+        startActivity(intent); // Ενεργοποίηση του Register Activity
     }
 }

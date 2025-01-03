@@ -46,35 +46,41 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+    private FirebaseAuth auth; // Αντικείμενο για χρήστη Firebase
+    private FirebaseUser user; // Αντικείμενο που αναφέρεται στον τρέχοντα χρήστη
     ImageView topRightImage;
-    private final int REQUEST_PERMISSION_CODE = 100; //για την εισαγωγή εικόνας
-    private final int PICK_IMAGE_REQUEST = 200;      //για την εισαγωγή εικόνας
-    private boolean isSlidePanelVisible  = false;
+    private final int REQUEST_PERMISSION_CODE = 100; // Κωδικός αιτήματος άδειας
+    private final int PICK_IMAGE_REQUEST = 200;      // Κωδικός επιλογής εικόνας
+    private boolean isSlidePanelVisible  = false;    // Μεταβλητή για την κατάσταση του slide panel
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // Ρύθμιση του layout για την κύρια δραστηριότητα
 
-
+        // Αρχικοποίηση Firebase Authentication και έλεγχος αν υπάρχει συνδεδεμενος χρήστης
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        if (user == null) {
+        if (user == null) { // Αν δεν υπάρχει τρέχων χρήστης, μετάβαση στη Login δραστηριότητα
             Intent intent = new Intent(this, Login.class);
             startActivity(intent);
             return;
         }
+
         topRightImage = findViewById(R.id.top_right_image);
+
+        // Προσθήκη του αρχικού HomeFragment στο container
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, new HomeFragment())
                 .commit();
 
+        // Αρχικοποίηση και λειτουργικότητα του BottomNavigationView
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
+            // Εναλλαγή μεταξύ των fragment ανάλογα με το επιλεγμένο tab
             if (itemId == R.id.nav_home) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, new HomeFragment())
@@ -96,20 +102,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
+            Uri imageUri = data.getData(); // Ανάκτηση URI της επιλεγμένης εικόνας
             if (imageUri != null) {
                 try {
-                    // Ορισμός της εικόνας στο ImageView
-                    topRightImage.setImageURI(imageUri);
-
-                    // Αποθήκευση του URI στις SharedPreferences
-                    saveImageUri(imageUri.toString());
-
+                    topRightImage.setImageURI(imageUri); // Εμφάνιση εικόνας στο ImageView
+                    saveImageUri(imageUri.toString()); // Αποθήκευση URI στις SharedPreferences
                     Toast.makeText(this, "Image inserted successfully!", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(this, "Error displaying image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -123,10 +124,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveTheStory(View view) {
-        // Προσθήκη της λειτουργικότητας που θέλεις εδώ
-        Log.d("Statistics", "saveTheStory clicked!");
+        // Προσθήκη (placeholder method)
+        Log.d("Statistics", "saveTheStory clicked!"); // Εμφάνιση log για debugging
     }
-
 
     public void CallStatisticsActivity(View view) {
         Intent intent = new Intent(this, Statistics.class);
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 R.anim.slide_out
         );
         if (isSlidePanelVisible) {
+            // Κλείσιμο του SlidePanel αν είναι ήδη ορατό
             SlidePanel slidePanel = (SlidePanel) fragmentManager.findFragmentByTag("SlidePanel");
             if (slidePanel != null) {
                 transaction.remove(slidePanel);
@@ -148,18 +149,17 @@ public class MainActivity extends AppCompatActivity {
             isSlidePanelVisible = false;
             findViewById(R.id.slide_panel_container).setVisibility(View.INVISIBLE);
         } else {
+            // Άνοιγμα του SlidePanel αν δεν είναι ορατό
             SlidePanel slidePanel = SlidePanel.newInstance();
             transaction.add(R.id.slide_panel_container, slidePanel, "SlidePanel");
             findViewById(R.id.slide_panel_container).setVisibility(View.VISIBLE);
             isSlidePanelVisible = true;
         }
 
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(null); // Προσθήκη στο back stack για δυνατότητα επιστροφής
         transaction.commit();
     }
 
-
-    //About insert picture and permissions
     public void insertPic(View view) {
         // Έλεγχος άδειας ανάλογα με την έκδοση του Android
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
-
         } catch (Exception e) {
             Toast.makeText(this, "Error opening gallery: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -202,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
     private void saveImageUri(String uri) {
         SharedPreferences sharedPreferences = getSharedPreferences("MyAppPreferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

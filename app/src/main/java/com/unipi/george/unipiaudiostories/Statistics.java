@@ -32,18 +32,18 @@ public class Statistics extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
-        // Firebase Initialization
+        // Αρχικοποίηση Firebase (Firestore και Auth)
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // RecyclerView Setup
+        // Ρύθμιση του RecyclerView
         recyclerView = findViewById(R.id.statisticsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         statisticsList = new ArrayList<>();
-        adapter = new StatisticsAdapter(statisticsList);
-        recyclerView.setAdapter(adapter);
+        adapter = new StatisticsAdapter(statisticsList); // Σύνδεση του adapter με τη λίστα
+        recyclerView.setAdapter(adapter); // Ορισμός του adapter στο RecyclerView
 
-        // Load data
+        // Φόρτωση στατιστικών από τη βάση δεδομένων
         loadStatistics();
     }
 
@@ -53,16 +53,18 @@ public class Statistics extends AppCompatActivity {
         firestore.collection("statistics").document(userId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult().exists()) {
+                        // Ελέγχουμε αν τα δεδομένα υπάρχουν και επεξεργαζόμαστε το αποτέλεσμα
                         DocumentSnapshot document = task.getResult();
                         Map<String, Object> data = document.getData();
                         if (data != null) {
-                            // Process listening data
+                            // Ανάκτηση δεδομένων για το χρόνο ακρόασης και τον αριθμό ακροάσεων
                             Map<String, Object> listeningTime = (Map<String, Object>) data.get("listeningTime");
                             Map<String, Object> listeningCount = (Map<String, Object>) data.get("listeningCount");
 
                             if (listeningTime != null && listeningCount != null) {
+                                // Επεξεργασία των δεδομένων και προσθήκη στη λίστα στατιστικών
                                 for (String documentId : listeningTime.keySet()) {
-                                    long time = ((Number) listeningTime.get(documentId)).longValue();
+                                    long time = ((Number) listeningTime.get(documentId)).longValue(); // Μετατροπή σε long
                                     int count = listeningCount.containsKey(documentId) ?
                                             ((Number) listeningCount.get(documentId)).intValue() : 0;
 
@@ -72,6 +74,7 @@ public class Statistics extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                         }
                     } else {
+                        // Εμφάνιση μηνύματος σφάλματος στον χρήστη
                         Toast.makeText(this, "Failed to load statistics", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "Error loading statistics", task.getException());
                     }

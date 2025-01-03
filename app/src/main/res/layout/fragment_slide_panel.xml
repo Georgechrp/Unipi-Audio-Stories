@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:onClick="CallStatisticsActivity"
-                android:text="See Statistics" />
+                android:text="@string/Statistics" />
 
             <Button
                 android:id="@+id/insert_pic"
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:onClick="insertPic"
-                android:text="Insert a picture" />
+                android:text="@string/insert_pic" />
 
             <!-- Κουμπί για αποσύνδεση -->
             <Button
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="signOut"
-                android:text="Logout" />
+                android:text="@string/logout" />
         </LinearLayout>
 
     </FrameLayout>

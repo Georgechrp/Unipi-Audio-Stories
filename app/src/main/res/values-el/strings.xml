@@ -15,7 +15,8 @@
     <string name="register_text">Εγγραφή</string>
     <string name="already_a_user_text">Ήδη χρήστης;</string>
     <string name="button_register">Εγγραφή</string>
-
+    <string name="emailText2">Ηλεκτρονική Διεύθυνση</string>
+    <string name="passwordText2">Κωδικός</string>
     <!-- Home -->
 
     <!-- Library -->
@@ -30,9 +31,10 @@
 
     <!-- Search -->
     <string name="not_yet">Όχι ακόμα</string>
-
+    <string name="search_edit_text">Ψάχνεις κάτι;</string>
     <!-- Slidepanel -->
     <string name="insert_pic">Εισαγωγή εικόνας</string>
+    <string name="Statistics">Στατιστικά</string>
     <string name="change_to_German">Αλλαγή σε Γερμανικά</string>
     <string name="change_to_Greek">Αλλαγή σε Ελληνικά</string>
     <string name="logout">Αποσύνδεση</string>
@@ -44,4 +46,10 @@
 
     <string name="hello_blank_fragment">Γειά σας, κενό Fragment</string>
     <string name="no_text_available"> Το κείμενο δεν είναι διαθεσιμο</string>
+
+    <!-- statistics -->
+    <string name="titleTextView">Τίτλος ιστορίας:</string>
+    <string name="timeTextView">Χρόνος που ακούσατε:</string>
+    <string name="countTextView">Πόσες φορές την ακούσατε:</string>
+    <string name="titleText">Τα στατιστικά σας</string>
 </resources>
