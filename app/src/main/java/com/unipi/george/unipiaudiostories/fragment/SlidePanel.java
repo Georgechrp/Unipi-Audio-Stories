@@ -1,5 +1,5 @@
 // SlidePanel.java
-package com.unipi.george.unipiaudiostories;
+package com.unipi.george.unipiaudiostories.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.unipi.george.unipiaudiostories.R;
+import com.unipi.george.unipiaudiostories.auth.Login;
 
 public class SlidePanel extends Fragment {
 

@@ -1,4 +1,4 @@
-package com.unipi.george.unipiaudiostories;
+package com.unipi.george.unipiaudiostories.utils;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;

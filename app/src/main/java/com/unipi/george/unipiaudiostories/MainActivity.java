@@ -3,18 +3,12 @@ package com.unipi.george.unipiaudiostories;
 import android.Manifest;
 
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -25,24 +19,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import android.content.Context;
-import android.content.res.Configuration;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Locale;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import com.unipi.george.unipiaudiostories.aboutStatistics.Statistics;
+import com.unipi.george.unipiaudiostories.auth.Login;
+import com.unipi.george.unipiaudiostories.fragment.HomeFragment;
+import com.unipi.george.unipiaudiostories.fragment.LibraryFragment;
+import com.unipi.george.unipiaudiostories.fragment.SearchFragment;
+import com.unipi.george.unipiaudiostories.fragment.SlidePanel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -124,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveTheStory(View view) {
-        // Προσθήκη (placeholder method)
         Log.d("Statistics", "saveTheStory clicked!"); // Εμφάνιση log για debugging
     }
 

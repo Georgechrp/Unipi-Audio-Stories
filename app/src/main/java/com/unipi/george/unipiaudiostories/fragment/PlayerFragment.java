@@ -1,8 +1,7 @@
-package com.unipi.george.unipiaudiostories;
+package com.unipi.george.unipiaudiostories.fragment;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +22,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
+import com.unipi.george.unipiaudiostories.utils.MyTts;
+import com.unipi.george.unipiaudiostories.R;
 
 import java.util.Arrays;
 import java.util.HashMap;

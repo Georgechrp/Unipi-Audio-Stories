@@ -19,7 +19,7 @@
         android:theme="@style/Theme.UnipiAudioStories"
         tools:targetApi="31">
         <activity
-            android:name=".Statistics"
+            android:name=".aboutStatistics.Statistics"
             android:exported="false" />
         <activity
             android:name=".Search"
@@ -31,7 +31,7 @@
             android:name=".Play"
             android:exported="false" />
         <activity
-            android:name=".Login"
+            android:name=".auth.Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Register"
+            android:name=".auth.Register"
             android:exported="true" />
         <activity
             android:name=".MainActivity"

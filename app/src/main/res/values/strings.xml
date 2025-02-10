@@ -39,7 +39,7 @@
     <!-- nav_menu -->
     <string name="nav_home">Main Page</string>
     <string name="nav_search">Search</string>
-    <string name="nav_library">Installs</string>
+    <string name="nav_library">Library</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

@@ -1,4 +1,4 @@
-package com.unipi.george.unipiaudiostories;
+package com.unipi.george.unipiaudiostories.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.unipi.george.unipiaudiostories.MainActivity;
+import com.unipi.george.unipiaudiostories.R;
 
 public class Register extends AppCompatActivity {
 

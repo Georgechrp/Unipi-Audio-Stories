@@ -1,10 +1,9 @@
-package com.unipi.george.unipiaudiostories;
+package com.unipi.george.unipiaudiostories.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,8 +17,8 @@ import android.view.ViewGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.squareup.picasso.Picasso;
+import com.unipi.george.unipiaudiostories.R;
+import com.unipi.george.unipiaudiostories.utils.StoryCardHelper;
 
 import java.util.List;
 
@@ -31,6 +30,20 @@ public class LibraryFragment extends Fragment {
     private String userId; // Αναγνωριστικό χρήστη που ανακτάται από FirebaseAuth
     private FirebaseAuth auth;
     private FirebaseUser user;
+
+    private Context mContext;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContext = null;
+    }
 
     public LibraryFragment() {
         // Required empty public constructor
@@ -88,6 +101,10 @@ public class LibraryFragment extends Fragment {
                     .document(storyId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
+                        if (!isAdded() || getContext() == null) {
+                            Log.e("LibraryFragment", "Fragment is not attached. Skipping UI update.");
+                            return; // Μην προχωρήσεις αν το Fragment δεν είναι έτοιμο
+                        }
                         if (documentSnapshot.exists()) {
                             // Ανάκτηση πεδίων της ιστορίας από το έγγραφο
                             String title = documentSnapshot.getString("title");
@@ -105,60 +122,18 @@ public class LibraryFragment extends Fragment {
     }
 
     private void addDataToView(String title, String imageUrl, String text, String author, String year, String documentId) {
-        // Δημιουργία CardView για εμφάνιση της ιστορίας
-        CardView cardView = new CardView(getContext());
-        cardView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        cardView.setRadius(16);
-        cardView.setCardElevation(8);
-        cardView.setUseCompatPadding(true);
-        cardView.setPadding(16, 16, 16, 16);
-        cardView.setContentPadding(16, 16, 16, 16);
+        if (!isAdded() || getContext() == null) {
+            Log.e(TAG, "Fragment is not attached!");
+            return;
+        }
 
-        // Δημιουργία TextView για τον τίτλο της ιστορίας
-        TextView textView = new TextView(getContext());
-        textView.setText(title);
-        textView.setTextSize(18);
-        textView.setPadding(0, 0, 0, 16);
-        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-        // Δημιουργία ImageView για την εικόνα της ιστορίας
-        ImageView imageView = new ImageView(getContext());
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                500 // Ύψος της εικόνας
-        ));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-        // Χρήση Picasso για φόρτωση εικόνας από URL
-        Picasso.get()
-                .load(imageUrl)
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.errorimage)
-                .into(imageView);
-
-        // Δημιουργία Layout για την ομαδοποίηση τίτλου και εικόνας
-        LinearLayout layout = new LinearLayout(getContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.addView(textView);
-        layout.addView(imageView);
-
-        cardView.addView(layout);
-
-        // Listener για την εικόνα που ανοίγει το PlayerFragment
-        imageView.setOnClickListener(v -> {
-            PlayerFragment playerFragment = PlayerFragment.newInstance(imageUrl, text, title, author, year, documentId);
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container, playerFragment) // Αντικατάσταση του fragment container
-                    .addToBackStack(null) // Προσθήκη στο backstack
-                    .commit();
-        });
+        // Δημιουργία CardView μέσω της νέας μεθόδου
+        CardView cardView = StoryCardHelper.createStoryCard(getContext(), title, imageUrl, text, author, year, documentId, linearLayout);
 
         // Προσθήκη του CardView στο LinearLayout
-        linearLayout.addView(cardView);
+        if (cardView != null) {
+            linearLayout.addView(cardView);
+        }
     }
 
 }

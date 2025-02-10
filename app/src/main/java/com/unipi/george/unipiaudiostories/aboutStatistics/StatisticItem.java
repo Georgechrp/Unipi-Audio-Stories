@@ -1,4 +1,4 @@
-package com.unipi.george.unipiaudiostories;
+package com.unipi.george.unipiaudiostories.aboutStatistics;
 
 import static android.content.ContentValues.TAG;
 

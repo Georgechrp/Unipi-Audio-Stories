@@ -43,7 +43,7 @@
     <!-- nav_menu -->
     <string name="nav_home">Startseite</string>
     <string name="nav_search">Suche</string>
-    <string name="nav_library">Downloads</string>
+    <string name="nav_library">Bibliothek</string>
 
     <string name="hello_blank_fragment">Hallo leeres Fragment</string>
 

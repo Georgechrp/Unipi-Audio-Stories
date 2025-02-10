@@ -34,6 +34,10 @@ android {
 
 dependencies {
 
+    implementation ("com.google.android.gms:play-services-base:18.0.1")
+    //implementation 'com.google.firebase:firebase-core:21.1.0'
+
+
     implementation ("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     implementation ("com.squareup.picasso:picasso:2.71828")

@@ -1,6 +1,4 @@
-package com.unipi.george.unipiaudiostories;
-
-import static android.content.ContentValues.TAG;
+package com.unipi.george.unipiaudiostories.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.unipi.george.unipiaudiostories.R;
+import com.unipi.george.unipiaudiostories.aboutStatistics.StatisticItem;
 
 import java.util.List;
 
